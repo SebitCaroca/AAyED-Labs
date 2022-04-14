@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 //----------------------------------------------------------------------------------------------------
 
@@ -62,9 +63,8 @@ void flip(int *arr, int arrLen,int cutoff){
 
 //----------------------------------------------------------------------------------------------------
 
-void flipSort(int *arrayFile,int arrLen){
+void flipSort(int *arrayFile,int arrLen,FILE *out){
     int low=0,id;
-    FILE *out = fopen("salida.out","w");
 
     while (isSorted(arrayFile,arrLen) == 0){ //Mientras la lista no este ordenada, hacer giros.
         id=checkHighestValue(arrayFile,low,arrLen);
@@ -99,12 +99,20 @@ void flipSort(int *arrayFile,int arrLen){
 
 //----------------------------------------------------------------------------------------------------
 
-int main(){
-    FILE *f_I = fopen("entrada.in","r");
+int main(int argc,char *argv[]){
+    FILE *f_I = fopen(argv[1],"r");
     if (f_I==NULL){
-        printf("Se necesita un archivo entrada.in \n");
+        printf("Se necesita un archivo de entrada.\n");
         return 0;
     }
+    FILE *f_O = fopen(argv[2],"w");
+    if (f_O==NULL){
+        printf("Se necesita un lugar donde guardar la salida.\n");
+        return 0;
+    }
+
+    //Guardar tiempo para calcular rendimiento.
+    clock_t flipStart,flipEnd;
 
     //Obtener longitud del array, y formarlo
     char fileBuffer[80];
@@ -114,11 +122,12 @@ int main(){
     fgets(fileBuffer,sizeof(fileBuffer),f_I);
     arrLen = atoi(fileBuffer);
     
-    int arrayFile[arrLen],a_top=arrLen,a_bottom=0,id=0;
+    int arrayFile[arrLen];
     
     //Obtener valores del array
-    fgets(fileBuffer,sizeof(fileBuffer),f_I);
-    ptr=strtok(fileBuffer," ");
+    char numberBuffer[arrLen*10];
+    fgets(numberBuffer,sizeof(numberBuffer),f_I);
+    ptr=strtok(numberBuffer," ");
     for (i = 0; i < arrLen; i++){
         arrayFile[i] = atoi(ptr);
         ptr=strtok(NULL," ");
@@ -128,10 +137,12 @@ int main(){
     //Ahora con el array armado, usar el algoritmo para ordenarlo
     printf("Arreglo inicial :");printArr(arrayFile,arrLen);
 
-    flipSort(arrayFile,arrLen);
+    flipStart=clock();
+    flipSort(arrayFile,arrLen,f_O);
+    flipEnd=clock();
 
     //Ya con el array ordenado, a ver como se ve
     printf("Arreglo ordenado:");printArr(arrayFile,arrLen);
-
+    printf("Tiempo demorado: %f\n",(double)(flipEnd-flipStart)/CLOCKS_PER_SEC);
     return 1;
 }
