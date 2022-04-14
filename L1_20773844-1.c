@@ -28,15 +28,21 @@ int isSorted(int *arr,int arrLen){
 
 //----------------------------------------------------------------------------------------------------
 
-int checkHighestValue(int *arr,int bottomLimit,int topLimit){
-    int i,id=0;
-    if (bottomLimit >= topLimit){return -1;}
-    for (i = bottomLimit; i < topLimit; i++){
-        if (arr[i] > arr[id]){
-            id = i;
-        }
+int checkHighestValue(int *arr,int bottomLimit,int arrLen){ //Revisa cual es el valor mas alto de una lista dentro de un rango.
+    int i,id=bottomLimit;
+
+    //Me permite ver si es que se desborda la lista.
+    if (bottomLimit >= arrLen) {
+        return (-1);
     }
-    return id;
+    else{
+        for (i = bottomLimit; i < arrLen; i++) {
+            if ( arr[i] > arr[id] ) {
+                id = i;
+            }
+        }
+        return id;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -61,9 +67,10 @@ void flipSort(int *arrayFile,int arrLen){
     //FILE *out = fopen("salida.out","w");
 
     while (isSorted(arrayFile,arrLen) == 0){ //Mientras la lista no este ordenada, hacer giros.
-        printArr(arrayFile,arrLen);
         id=checkHighestValue(arrayFile,low,arrLen);
-        //printf("Estado actual... low: %d | top: %d | id: %d\n",low,top,id);
+        printf("Estado actual... base: %d | id-num-mayor: %d\n",low,id);
+        printArr(arrayFile,arrLen);
+        printf("\n");
 
         if (id == -1){ //Con esto sabre que onda pasa aqui.
             printf("Error.\n");
@@ -112,12 +119,12 @@ int main(){
     fclose(f_I);
 
     //Ahora con el array armado, usar el algoritmo para ordenarlo
-    printf("Arreglo inicial:\n");printArr(arrayFile,arrLen);
+    //printf("Arreglo inicial:\n");printArr(arrayFile,arrLen);
 
     flipSort(arrayFile,arrLen);
 
     //Ya con el array ordenado, a ver como se ve
-    printf("Arreglo en orden:");printArr(arrayFile,arrLen);
+    //printf("Arreglo en orden:");printArr(arrayFile,arrLen);
 
     return 1;
 }
