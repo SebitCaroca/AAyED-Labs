@@ -19,8 +19,8 @@ void printArr(int *arr,int arrSize){
 int isSorted(int *arr,int arrLen){
     int i;
     for (i = 0; i < (arrLen-1); i++){
-        if (arr[i]>arr[i+1]) {
-            return 0; //no está ordenado
+        if (arr[i]<arr[i+1]){
+            return 0; //No esta ordenado
         }
     }
     return 1; //si está ordenado
@@ -64,16 +64,20 @@ void flip(int *arr, int arrLen,int cutoff){
 
 void flipSort(int *arrayFile,int arrLen){
     int low=0,id;
-    //FILE *out = fopen("salida.out","w");
+    FILE *out = fopen("salida.out","w");
 
     while (isSorted(arrayFile,arrLen) == 0){ //Mientras la lista no este ordenada, hacer giros.
         id=checkHighestValue(arrayFile,low,arrLen);
+        
+        /*
         printf("Estado actual... base: %d | id-num-mayor: %d\n",low,id);
         printArr(arrayFile,arrLen);
         printf("\n");
+        */
 
-        if (id == -1){ //Con esto sabre que onda pasa aqui.
+        if (id == -1){ //Es solo en caso de emergencia, nada de que preocuparse.
             printf("Error.\n");
+            fprintf(out,"Error");
             break;
         }
         else if (id == low){ //Significa que el numero mas grande esta al inicio del rango a ver, nada que hacer aqui.
@@ -81,13 +85,16 @@ void flipSort(int *arrayFile,int arrLen){
         }
         else if (id == (arrLen-1)){ //Significa que el numero mas grande está en la cima de la lista, hay que dar vuelta la lista.
             flip(arrayFile,arrLen,low);
+            fprintf(out,"%d ",low+1);
         }
         else{ //Significa que hay que mover el numero mas grande hacia la cima para poder ponerla al final.
             flip(arrayFile,arrLen,id);
+            fprintf(out,"%d ",id+1);
         }
-        
     }
-    //fclose(out);
+
+    fprintf(out,"0");
+    fclose(out);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -119,12 +126,12 @@ int main(){
     fclose(f_I);
 
     //Ahora con el array armado, usar el algoritmo para ordenarlo
-    //printf("Arreglo inicial:\n");printArr(arrayFile,arrLen);
+    printf("Arreglo inicial :");printArr(arrayFile,arrLen);
 
     flipSort(arrayFile,arrLen);
 
     //Ya con el array ordenado, a ver como se ve
-    //printf("Arreglo en orden:");printArr(arrayFile,arrLen);
+    printf("Arreglo ordenado:");printArr(arrayFile,arrLen);
 
     return 1;
 }
