@@ -24,6 +24,17 @@ TDAlista* crearListaVacia(){
   return lista;
 }
 
+// Dom :
+// Rec : TDA Nodo
+// Desc: Crea un nodo completamente vacio, preparado para agregar elementos.
+nodo* crearNodoVacio(){
+  nodo* nodoNuevo = (nodo*)malloc(sizeof(nodo));
+  nodoNuevo->n_inicio = 0;
+  nodoNuevo->n_final = 0
+  nodoNuevo->siguiente = NULL;
+  return nodoNuevo;
+}
+
 // Dom : TDA Lista Enlazada
 // Rec : Int
 // Desc: Revisa si la lista enlazada esta vacia, retornando 1 si es asi, 0 si no.
@@ -37,7 +48,7 @@ int esListaVacia(TDAlista* lista){
 // Desc: Agrega un nodo nuevo hacia el final de una lista enlazada.
 //       Este nodo contiene a los dos valores int que se estan agregando.
 void insertarNodo(TDAlista* lista, int inicio,int final){
-    nodo* nuevo=(nodo*)malloc(sizeof(nodo));
+    nodo* nuevo = crearNodoVacio();
     nuevo->n_inicio = inicio;
     nuevo->n_final = final;
     nuevo->siguiente = NULL;

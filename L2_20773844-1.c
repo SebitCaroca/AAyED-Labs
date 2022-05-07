@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "L2_TDALista-Editada.h"
 
 // Dom : int, int, int
@@ -68,26 +69,42 @@ int rangoEnRango(nodo* nodo1, nodo* nodo2){
     }
 }
 
-// Doc : TDA Lista Enlazada
-// Rec : Array de TDA Lista Enlazada
-// Desc: Una forma bastante ridicula de como separar los dias en sus propias listas.
-TDAlista** separaHorarios(TDAlista* listaMaestra){
-    int i;
-    int dias = 5;
-    int horas = cantidadLista(listaMaestra);
-    int len = (dias * sizeof(TDAlista*)) + (dias * horas * sizeof(TDAlista));
-    TDAlista** horario = (TDAlista**)malloc(len);
-    for (i = 0; i < dias; i++){
-        horario[i] = crearListaVacia();
-    }
+// Doc : TDA Lista Enlazada, int
+// Rec : TDA Lista Enlazada
+// Desc: Creo un horario que contenga solo un dia, dependiendo del valor dia.
+TDAlista* filtroHorarios(TDAlista* listaMaestra, int dia){
+    TDAlista* lista = crearListaVacia();
     nodo* aux = listaMaestra->l_inicio;
     while (aux != NULL){
-        i=aux->n_inicio; //Tras revisar n_inicio & n_final, ambos deberian tener el mismo dia.
-        i=i/100;
-        insertarNodo(horario[i],aux->n_inicio,aux->n_final);
-        aux=aux->siguiente;
+        if ( (aux->n_inicio)/100 == dia ){
+            insertarNodo(lista,aux->n_inicio,aux->n_final);
+        }
+        aux = aux->siguiente;
     }
-    return horario;
+    return lista;
+}
+
+// Doc : TDA Nodo, TDA Nodo
+// Rec : TDA Nodo
+// Desc: Retorna un nodo que contiene los valores mas grandes y pequeños de los dos nodos.
+//       Notar que su valor siguiente es NULL.
+nodo* mezclarNodos(nodo* nodo1, nodo* nodo2){
+    nodo* nodoMezcla = crearNodoVacio();
+    //Revisar los mas pequeños
+    if (nodo1->n_inicio =< nodo2->n_inicio){
+        nodoMezcla->n_inicio = nodo1->n_inicio;
+    }else if (nodo1->n_inicio > nodo2->n_inicio){
+        nodoMezcla->n_inicio = nodo2->n_inicio;
+    }
+    
+    //Revisar los mas grandes
+    if (nodo1->n_final =< nodo2->n_final){
+        nodoMezcla->n_final = nodo2->n_final;
+    }else if (nodo1->n_final > nodo2->n_final){
+        nodoMezcla->n_final = nodo1->n_final;
+    }
+    
+    return nodoMezcla;
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -104,24 +121,41 @@ int main(int argc,char *argv[]){
         printf("Se necesita un lugar donde guardar la salida.\n");
         return 0;
     }
-    TDAlista* lista = armarInicio(f_I);
+
+    clock_t mergeStart,mergeEnd;
+    mergeStart = clock();
+
+    //---------------------------------------------------------------------------------------------
+
+    //Obtener Horario original.
+    TDAlista* listaMaestra = armarInicio(f_I);
     fclose(f_I);
-    /*CODIGO*/
-    TDAlista** horario = separaHorarios(lista);
-    printf("Lunes...\n");
-    printLista(horario[0],1);
-    printf("Martes...\n");
-    printLista(horario[1],1);
-    printf("Miercoles...\n");
-    printLista(horario[2],1);
-    printf("Jueves...\n");
-    printLista(horario[3],1);
-    printf("Viernes...\n");
-    printLista(horario[4],1);
-    printf("\nFin\n");
-    /*CODIGO*/
-    liberarLista(lista);
-    free(lista);
+    
+    //Crear arreglo de horarios filtrados. 
+    int i;
+    TDAlista* horario[5];
+    for (i = 0; i < 5; i++){
+        horario[i] = filtroHorarios(listaMaestra,i+1);
+    }
+
+    liberarLista(listaMaestra);
+    free(listaMaestra);
+
+    for (i = 0; i < 5; i++){
+        printf("Dia %d ---------------------\n",i+1);
+        printLista(horario[i],1);
+    }
+
     fclose(f_O);
+    for (i = 0; i < 5; i++){
+        liberarLista(horario[i]);
+        free(horario[i]);
+    }
+
+    //---------------------------------------------------------------------------------------------
+
+    mergeEnd = clock();
+    printf("Tiempo demorado: %f\n",(double)(mergeEnd-mergeStart)/CLOCKS_PER_SEC);
+    
     return 0;
 }
