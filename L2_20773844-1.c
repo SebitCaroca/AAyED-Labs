@@ -74,7 +74,9 @@ int rangoEnRango(nodo* nodo1, nodo* nodo2){
 TDAlista** separaHorarios(TDAlista* listaMaestra){
     int i;
     int dias = 5;
-    TDAlista** horario = (TDAlista**)malloc( dias * sizeof(TDAlista*) );
+    int horas = cantidadLista(listaMaestra);
+    int len = (dias * sizeof(TDAlista*)) + (dias * horas * sizeof(TDAlista));
+    TDAlista** horario = (TDAlista**)malloc(len);
     for (i = 0; i < dias; i++){
         horario[i] = crearListaVacia();
     }
