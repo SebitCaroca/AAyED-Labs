@@ -77,7 +77,6 @@ int obtenerCantNodos(FILE* archivo){
 TDAgrafo* leerGrafoNoDirigidoPonderado(FILE* pf){
 	int n_vertices, m_aristas, estaciones;
 	int nodo_x,nodo_y,nodo_w;
-  int garbage;
   
 	if (pf == NULL){
 		printf("Error de archivo.\n");

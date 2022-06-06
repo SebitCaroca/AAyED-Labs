@@ -7,7 +7,7 @@
 
 int extraerMinimo(int* d_longitud,int* d_visitado,int cvertices){
 	int minimo = INT_MAX;
-	int indiceMinimo = 0;
+	int indiceMinimo = -1;
 	int i;
 	for (i = 0; i < cvertices; ++i){
 		//Obtener la minima distancia que no haya sido visto aun.
@@ -19,12 +19,12 @@ int extraerMinimo(int* d_longitud,int* d_visitado,int cvertices){
 		}
 	}
 	
-	return indiceMinimo;
+	return indiceMinimo + 1;
 }
 
 //I: Array, Int
 //O: Bool (Int)
-//Revisa si queda algun 0 en el arreglo visitados.
+//Revisa si existe un 0 en el arreglo.
 //Si es asi, retorna 1, sino 0.
 int quedanSinVisitar(int* d_visitado, int limite){
   for (int i = 0; i < limite ; i++){
