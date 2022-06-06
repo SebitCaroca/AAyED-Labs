@@ -113,10 +113,10 @@ TDAlista* obtenerAdyacentes(TDAgrafo* grafo, int vertice){
 	TDAlista* adyacente = crearListaVacia();
 	nodo* tempNodo;
 	for (int i = 0; i < grafo->cvertices; ++i) {
-		if (grafo->adyacencias[vertice-1][i] == 1){
+		if (grafo->adyacencias[vertice][i] != 0){
 			tempNodo = crearNodoVacio();
-			tempNodo->dato = (i+1);
-			insertarNodoInicio(adyacente,tempNodo);
+			tempNodo->dato = i;
+			insertarNodoFinal(adyacente,tempNodo);
 		}
 	}
   return adyacente;

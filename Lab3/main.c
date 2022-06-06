@@ -5,9 +5,33 @@
 #include "TDApila.h"
 #include "TDAgrafo-edit.h"
 
+int valorMinimoArreglo(int* arr, int limit){
+	int minimo = INT_MAX;
+	int minIndex = 0;
+	for (size_t i = 0; i < limit; i++){
+		if (arr[i] <= minimo){
+			minimo = arr[i];
+			minIndex = i;
+		}
+	}
+	return minIndex;
+}
+
+int valorMaximoArreglo(int* arr, int limit){
+	int maximo = 0;
+	int maxIndex = 0;
+	for (size_t i = 0; i < limit; i++){
+		if (arr[i] >= maximo){
+			maximo = arr[i];
+			maxIndex = i;
+		}
+	}
+	return maxIndex;
+}
+
 int extraerMinimo(int* d_longitud,int* d_visitado,int cvertices){
 	int minimo = INT_MAX;
-	int indiceMinimo = -1;
+	int indiceMinimo = 0;
 	int i;
 	for (i = 0; i < cvertices; ++i){
 		//Obtener la minima distancia que no haya sido visto aun.
@@ -18,8 +42,7 @@ int extraerMinimo(int* d_longitud,int* d_visitado,int cvertices){
 			}
 		}
 	}
-	
-	return indiceMinimo + 1;
+	return indiceMinimo;
 }
 
 //I: Array, Int
@@ -28,7 +51,7 @@ int extraerMinimo(int* d_longitud,int* d_visitado,int cvertices){
 //Si es asi, retorna 1, sino 0.
 int quedanSinVisitar(int* d_visitado, int limite){
   for (int i = 0; i < limite ; i++){
-    if (d_visitado[i] == 0){ return 1; }
+    if (d_visitado[i] != 1){ return 1; }
   }
   return 0;
 }
@@ -49,19 +72,19 @@ Procedimiento:
 ----Despues de probar con todos los nodos
 ----Escribir en cuartel.out el nodo cuyo valor es el mas alto del arreglo
 */
-void dijkstra(TDAgrafo* grafo,int vertice){
+int* dijkstra(TDAgrafo* grafo,int vertice){
 	//Inicializacion.
-	int* d_anterior = (int*)calloc(sizeof(int),grafo->cvertices);
-	int* d_visitado = (int*)calloc(sizeof(int),grafo->cvertices);
-	int* d_longitud = (int*)calloc(sizeof(int),grafo->cvertices);
+	int* d_anterior = (int*)calloc(grafo->cvertices,sizeof(int));//padre
+	int* d_visitado = (int*)calloc(grafo->cvertices,sizeof(int));//visto
+	int* d_longitud = (int*)calloc(grafo->cvertices,sizeof(int));//distancia
 	int u;
-  	int s = vertice-1;
+  int s = vertice;
 	TDAlista* listaAdy;
 	nodo* aux;
 	int w,i;
 
 	//Algoritmo.
-	for (w = 0; w < grafo->cvertices ; w++){
+	for (w = 0 ; w < grafo->cvertices ; w++){
 		d_anterior[w] = -1; //NULL
 		d_visitado[w] = 0;  //FALSO
 		if ( grafo->adyacencias[s][w] > 0 ){
@@ -86,20 +109,46 @@ void dijkstra(TDAgrafo* grafo,int vertice){
 			}
 			aux=aux->siguiente;
 		}
+		liberarLista(listaAdy);
+		free(listaAdy);
 	}
-
-  for (i = 0; i < grafo->cvertices ; i++){
-    printf("%d %d %d\n",d_anterior[i],d_visitado[i],d_longitud[i]);
-  }
+	free(d_anterior);
+	free(d_visitado);
+	return d_longitud;
 }
 
-      
+/*
+Procedimiento:
+--Repetir lo siguiente hasta que todos los nodos de X hayan sido visitados:
+----Obtener la distancia mas corta entre Xi y un nodo de Y (Dijkstra sera util)
+----Si hay multiples nodos de Y
+------Probar con todos los Yi
+------Obtener el mas corto
+----Despues de probar con todos los nodos
+----Escribir en cuartel.out el nodo cuyo valor es el mas alto del arreglo
+*/
+
+int lugarIdeal(TDAgrafo* G){
+	int* distancia;
+	int distCortaEsp[G->espLimit];
+	int distLargaEsp[G->cvertices];
+	for (size_t i = 0; i < G->cvertices; i++){
+		distancia = dijkstra(G,i);
+		for (size_t j = 0; j < G->espLimit; j++){
+			distCortaEsp[j] = distancia[G->especial[j]];
+		}
+		distLargaEsp[i] = valorMinimoArreglo(distCortaEsp,G->espLimit);
+	}
+	return (valorMaximoArreglo(distLargaEsp,G->cvertices));
+}
+
 int main(void) {
   FILE* archivo = fopen("pueblo1.in","r");
   TDAgrafo* grafo = leerGrafoNoDirigidoPonderado(archivo);
   imprimirMatrizAdyacencia(grafo);
   fclose(archivo);
-  dijkstra(grafo,5);
-  printf("Fin.\n");
+	FILE* output = fopen("cuartel1.out","w");
+	fprintf(output,"%d",lugarIdeal(grafo));
+	printf("Fin\n");
   return 0;
 }

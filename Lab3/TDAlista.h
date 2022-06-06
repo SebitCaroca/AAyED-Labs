@@ -111,7 +111,7 @@ void printLista(TDAlista* lista){
     nodo* aux=lista->inicio;
     int i=1;
     while (aux != NULL){
-      printf("Nodo %d\n",i);
+      printf("Nodo %d - ",i);
       printNodo(aux);
       i++;
       aux = aux->siguiente;
