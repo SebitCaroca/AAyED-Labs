@@ -32,32 +32,33 @@ TDAabb* lista2ABB(TDAlista* lista){
   return arbol;
 }
 
-void ABB2listaRecursivo(nodoABB* nodoArbol, TDAlista* listaNueva, nodo* ultimoElemento){
+void ajusteElementoSalida(nodoABB* nodoArbol, TDAlista* listaSalida, nodo* nodoLista){
+  //En caso que la lista este vacia, agregar elemento, pues no hay nada que comparar
+  if (esListaVacia(listaSalida)){
+    nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF);
+    insertarNodoInicio(listaSalida,nuevoNodo);
+    nodoLista = listaSalida->inicio;
+  }else{ //Caso contrario, hay algo que se puede comparar...
+    //En el caso que si haya sobreposicion de elementos, unir el minimo de inicios, y maximos de finales
+    if (isOverlap(nodoLista->tiempoI,nodoLista->tiempoF,nodoArbol->tiempoI,nodoArbol->tiempoF)){
+      nodoLista->tiempoI = min(nodoArbol->tiempoI,nodoLista->tiempoI);
+      nodoLista->tiempoF = max(nodoArbol->tiempoF,nodoLista->tiempoF);
+    }else{ //Caso contrario, crear nuevo nodo, y agregarlo al arbol, también cambiar puntero.
+      nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF);
+      insertarNodoSiguiente(nodoLista,nuevoNodo);
+      nodoLista = nodoLista->siguiente;
+    }
+  }
+}
+
+void ABB2listaRecursivo(nodoABB* nodoArbol, TDAlista* listaSalida, nodo* ultimoElemento){
   //Se usara exploracion INORDEN, asi obtengo datos ordenados...
   if (nodoArbol != NULL){
-    ABB2listaRecursivo(nodoArbol->hijoIzquierdo,listaNueva,ultimoElemento);
+    ABB2listaRecursivo(nodoArbol->hijoIzquierdo,listaSalida,ultimoElemento);
     //--------------------------------------------------------------------------------------PROCESO
-    // Caso inicial, cuando la lista esta vacia.
-    if (ultimoElemento == NULL){
-      nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF); 
-      insertarNodoInicio(listaNueva,nuevoNodo);
-      ultimoElemento = listaNueva->inicio;
-    }
-    //Para el resto de elementos en la lista
-    else{ 
-      if (isOverlap(nodoArbol->tiempoI,nodoArbol->tiempoF,ultimoElemento->tiempoI,ultimoElemento->tiempoF)){
-        // Hay sobreposicion, unir datos del arbol con el ultimo de la lista.
-        ultimoElemento->tiempoI = min(nodoArbol->tiempoI,ultimoElemento->tiempoI);
-        ultimoElemento->tiempoF = max(nodoArbol->tiempoF,ultimoElemento->tiempoF);
-      }else{
-        // No hay sobreposicion, crear un nodo nuevo, y cambiar el ultimo elemento a este.
-        nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF);
-        insertarNodoSiguiente(ultimoElemento,nuevoNodo);
-        ultimoElemento = ultimoElemento->siguiente;
-      }
-    }
+    ajusteElementoSalida(nodoArbol,listaSalida,ultimoElemento);
     //--------------------------------------------------------------------------------------PROCESO
-    ABB2listaRecursivo(nodoArbol->hijoDerecho,listaNueva,ultimoElemento);
+    ABB2listaRecursivo(nodoArbol->hijoDerecho,listaSalida,ultimoElemento);
   }
 }
 
@@ -93,11 +94,13 @@ int main(int argc,char *argv[]){
   free(lista);
 
   recorridoInordenABB(arbol);
+
   TDAlista* nuevaLista = ABB2listaMix(arbol);
   printf("-\n");
   printLista(nuevaLista);
-  lista2Archivo(nuevaLista,argv[2]);
   printf("-\n");
+
+  lista2Archivo(nuevaLista,argv[2]);
   liberarLista(nuevaLista);
   free(nuevaLista);
   return 0;
