@@ -6,6 +6,9 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define isOverlap(x1,x2,y1,y2) (((x1 <= y2) && (y1 <= x2)) ? 1 : 0 )
 
+
+/*Esta funcion consiste en la lectura del archivo de entrada
+  Lo adapta a una lista enlazada como entrada.*/
 TDAlista* cargarListaDeArchivo(FILE* archivo){
   TDAlista* lista = crearListaVacia();
   int tiempoI,tiempoF;
@@ -16,6 +19,9 @@ TDAlista* cargarListaDeArchivo(FILE* archivo){
   return lista;
 }
 
+/*Esta funcion obtiene cada dato de una lista enlazada, y la agrega a un ABB
+  De esta forma, los datos estaran ordenados
+  No de la manera mas ideal, pero lo suficiente*/
 TDAabb* lista2ABB(TDAlista* lista){
   TDAabb* arbol = crearABBVacio();
   nodo* aux = lista->inicio;
@@ -34,7 +40,7 @@ void ABB2listaRecursivo(nodoABB* nodoArbol, TDAlista* listaNueva, nodo* ultimoEl
     // Caso inicial, cuando la lista esta vacia.
     if (ultimoElemento == NULL){
       nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF); 
-      insertarNodoFinal(listaNueva,nuevoNodo);
+      insertarNodoInicio(listaNueva,nuevoNodo);
       ultimoElemento = listaNueva->inicio;
     }
     //Para el resto de elementos en la lista
@@ -46,7 +52,7 @@ void ABB2listaRecursivo(nodoABB* nodoArbol, TDAlista* listaNueva, nodo* ultimoEl
       }else{
         // No hay sobreposicion, crear un nodo nuevo, y cambiar el ultimo elemento a este.
         nodo* nuevoNodo = crearNodo(nodoArbol->tiempoI,nodoArbol->tiempoF);
-        insertarNodoFinal(listaNueva,nuevoNodo);
+        insertarNodoSiguiente(ultimoElemento,nuevoNodo);
         ultimoElemento = ultimoElemento->siguiente;
       }
     }

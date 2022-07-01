@@ -68,6 +68,15 @@ void insertarNodoInicio(TDAlista* lista, nodo* newNodo){
   lista->inicio = newNodo;
 }
 
+// Dom: TDA Nodo Lista Enlazada
+// Rec:
+// Desc: Agrega un nodo "newNodo" al nodo siguiente de "nodoBase".
+//       Si "nodoBase" ya tiene un nodo siguiente, sera copiado al "newNodo"
+void insertarNodoSiguiente(nodo* nodoBase, nodo* newNodo){
+  newNodo->siguiente = nodoBase->siguiente;
+  nodoBase->siguiente = newNodo;
+}
+
 // Dom : TDA Lista Enlazada
 // Rec : 
 // Desc: Remueve el primer nodo de la lista enlazada.
